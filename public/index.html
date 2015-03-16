@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - STL</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				color: #fff;
+				position: absolute;
+				top: 10px;
+				width: 100%;
+				text-align: center;
+				z-index: 100;
+				display:block;
+
+			}
+
+			a { color: skyblue }
+			.button { background:#999; color:#eee; padding:0.2em 0.5em; cursor:pointer }
+			.highlight { background:orange; color:#fff; }
+
+			span {
+				display: inline-block;
+				width: 60px;
+				float: left;
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<script src="js/three.min.js"></script>
+
+		<script src="js/loaders/DDSLoader.js"></script>
+        <script src="js/loaders/MTLLoader.js"></script>
+        <script src="js/loaders/OBJMTLLoader.js"></script>
+        <script src="js/loaders/STLLoader.js"></script>
+        <script src="js/modelLoader.js"></script>
+
+		
+		<script src="js/controls/OrbitControls.js"></script>		
+		<script src="js/Detector.js"></script>
+		<script src="js/libs/stats.min.js"></script>
+		<script src="js/libs/dat.gui.min.js"></script>
+		<script>
+			//init
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+			var container, stats;
+			var camera, cameraTarget, scene, renderer;
+			var bShowAxisHelper = false;
+
+			var loadedModels = new Array();
+			window.loadedModels = loadedModels;
+
+			init();
+			animate();
+			function clearScene() {
+				scene.remove(stlmesh);
+			}
+			function init() {
+				if (container)
+				{
+					document.body.removeChild( container );
+				}
+				
+		        //threejs container init
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				camera = new THREE.PerspectiveCamera(40, window.innerWidth/window.innerHeight, 1, 10000);
+				camera.position.set( 0, 0, -5000 );
+				
+
+				dist = 1000;
+
+				vFOV = camera.fov * Math.PI / 180;        // convert vertical fov to radians
+				height = 2 * Math.tan( vFOV / 2 ) * dist; // visible height
+
+				aspect = window.innerWidth / window.innerHeight;
+				width = height * aspect;                  // visible width
+
+
+				//camera.position.z = 300;
+				//camera.position.y = 150;
+				cameraTarget = new THREE.Vector3( 0, 0, 0 );
+				scene = new THREE.Scene();
+				//threejs model loading
+
+				if (bShowAxisHelper == true) {
+			      var axisHelper = new THREE.AxisHelper( 500 );
+			      scene.add( axisHelper );
+			    }
+
+				scene.add(camera);
+
+				var pointLight = new THREE.PointLight( 0xffffff );
+			    pointLight.position.set(1,1,2);
+			    camera.add(pointLight);
+
+			    var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, .7);
+			    window.hemiLight = hemiLight;
+			    scene.add(hemiLight);
+
+				loadModels();
+
+				// renderer
+				renderer = new THREE.WebGLRenderer({
+				  precision   : 'highp',
+				  //preserveDrawingBuffer: true,
+				  antialiasing: true,
+				  alpha       : true
+				});
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				// renderer.gammaInput = true;
+				// renderer.gammaOutput = true;
+				// renderer.shadowMapEnabled = true;
+				// renderer.shadowMapCullFace = THREE.CullFaceBack;
+				container.appendChild( renderer.domElement );
+				
+				// keep it big
+				window.addEventListener( 'resize', onWindowResize, false );
+				// window.onkeyup = function(e) {
+				// 	var key = e.keyCode ? e.keyCode : e.which;
+				// 	if (key == 38) {
+				// 		rotationSpeed += .5;
+				// 	}else if (key == 40) {
+				// 		rotationSpeed -= .5;
+				// 	}
+				// }				
+				setControls();
+				//setGui();
+				setStats();
+			}
+
+			function loadModels() {
+				window.xPos = -2500;
+				window.yPos = 1250;
+				window.modelCount = 0;
+				var models = [
+					['scans/lauren/model_mesh.obj', 'scans/lauren/model_mesh.obj.mtl'],
+					['scans/rob/model_mesh.obj', 'scans/rob/model_mesh.obj.mtl'],
+					['scans/steve/model_mesh.obj', 'scans/steve/model_mesh.obj.mtl'],
+					['scans/thom/model_mesh.obj', 'scans/thom/model_mesh.obj.mtl'],
+					['scans/travis/model_mesh.obj', 'scans/travis/model_mesh.obj.mtl'],
+					['scans/wei/model_mesh.obj', 'scans/wei/model_mesh.obj.mtl'],
+
+					['scans/lauren/model_mesh.obj', 'scans/lauren/model_mesh.obj.mtl'],
+					['scans/rob/model_mesh.obj', 'scans/rob/model_mesh.obj.mtl'],
+					['scans/steve/model_mesh.obj', 'scans/steve/model_mesh.obj.mtl'],
+					['scans/thom/model_mesh.obj', 'scans/thom/model_mesh.obj.mtl'],
+					['scans/travis/model_mesh.obj', 'scans/travis/model_mesh.obj.mtl'],
+					['scans/wei/model_mesh.obj', 'scans/wei/model_mesh.obj.mtl'],
+
+					['scans/lauren/model_mesh.obj', 'scans/lauren/model_mesh.obj.mtl'],
+					['scans/rob/model_mesh.obj', 'scans/rob/model_mesh.obj.mtl'],
+					['scans/steve/model_mesh.obj', 'scans/steve/model_mesh.obj.mtl'],
+					['scans/thom/model_mesh.obj', 'scans/thom/model_mesh.obj.mtl'],
+					['scans/travis/model_mesh.obj', 'scans/travis/model_mesh.obj.mtl'],
+					['scans/wei/model_mesh.obj', 'scans/wei/model_mesh.obj.mtl'],
+
+					// ['scans/lauren/model_mesh.obj', 'scans/lauren/model_mesh.obj.mtl'],
+					// ['scans/rob/model_mesh.obj', 'scans/rob/model_mesh.obj.mtl'],
+					// ['scans/steve/model_mesh.obj', 'scans/steve/model_mesh.obj.mtl'],
+					// ['scans/thom/model_mesh.obj', 'scans/thom/model_mesh.obj.mtl'],
+					// ['scans/travis/model_mesh.obj', 'scans/travis/model_mesh.obj.mtl'],
+					// ['scans/wei/model_mesh.obj', 'scans/wei/model_mesh.obj.mtl']
+				];
+				for (var i=0; i<models.length; i++) {
+				    modelLoader(models[i], modelLoaded);
+				}
+			}
+
+			function modelLoaded(obj){
+		      obj.rotation.y = Math.PI;
+
+		      obj.scale.x = obj.scale.y = obj.scale.z = 1500;
+
+		      obj.position.x = xPos;
+		      obj.position.y = yPos;
+		      obj.position.z = 0;
+
+		      window.loadedModels.push(obj);
+		      scene.add(obj);
+
+		      window.xPos += 1000;
+		      if (window.modelCount%6 == 5)
+		      {
+		      	window.yPos -= 750;
+		      	window.xPos = -2500;
+		      }
+
+		      window.modelCount++;
+		    }
+
+			function setStats() {
+				// stats
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.bottom = '0px';
+				container.appendChild( stats.domElement );
+			}
+
+			function setGui() {
+
+				guiObj = {
+				  Num_Models : '0',
+				  Rot_Speed : 0.8,
+				  Auto_Add : false,
+				  Auto_Time: 1,
+				  Add_Model : function() { loadStl(); }
+				}
+
+				var gui = new dat.GUI();
+				gui.remember(guiObj);
+
+				gui.add(guiObj, 'Num_Models').listen();
+				gui.add(guiObj, 'Rot_Speed', 0, 5);
+				gui.add(guiObj, 'Auto_Add').onChange( function(value){
+					if (value) {
+						loadStl();
+						autoTimer = setInterval(loadStl, addTime);
+					}
+					else {
+						clearInterval(autoTimer);
+					}
+				} );
+				gui.add(guiObj, 'Auto_Time', 1, 5).onChange( function(value){
+					addTime = value*1000;
+					clearInterval(autoTimer);
+					autoTimer = setInterval(loadStl, addTime);
+				});
+				gui.add(guiObj, 'Add_Model');
+			}
+
+			function setControls(){
+				//var radius = sphere.geometry.boundingSphere.radius;
+				controls = new THREE.OrbitControls( camera );
+				controls.target = new THREE.Vector3( 0, 0, 0 );
+				//controls.noPan = true;
+				//controls.noRotate = true;
+				controls.noZoom = true;
+				controls.update();
+			}
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+			function animate() {
+				requestAnimationFrame( animate );
+				render();
+				if (stats) {
+					stats.update();
+				}
+			}
+
+			document.onmousemove = function(event) {
+				
+				var vector = new THREE.Vector3();
+
+				vector.set(
+				    ( event.clientX / window.innerWidth ) * 2 - 1,
+				    - ( event.clientY / window.innerHeight ) * 2 + 1,
+				    0.5 );
+
+				vector.unproject( camera );
+
+				var dir = vector.sub( camera.position ).normalize();
+
+				var distance = - (camera.position.z / dir.z)/1.1;
+
+				var pos = camera.position.clone().add( dir.multiplyScalar( distance ) );
+
+				for (var i=0; i<window.loadedModels.length; i++) {
+					window.loadedModels[i].lookAt(pos);
+				}
+			}
+
+
+
+			function render() {
+
+				camera.lookAt( cameraTarget );
+				renderer.render( scene, camera );				
+			}
+		</script>
+	</body>
+</html>

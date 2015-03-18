@@ -44,6 +44,10 @@
         <script src="js/loaders/STLLoader.js"></script>
         <script src="js/modelLoader.js"></script>
 
+        <script type="text/javascript" src="js/glfx-neu.js"></script>
+        <script type="text/javascript" src="js/moving-averager.js"></script>
+        <script type="text/javascript" src="js/simple-motion-detector.js"></script>
+
 		
 		<script src="js/controls/OrbitControls.js"></script>		
 		<script src="js/Detector.js"></script>
@@ -52,12 +56,34 @@
 		<script>
 			//init
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+
+			var bShowAxisHelper = false;
+			var bShowStats = false;
+			var bShowMotionView = false;
+
 			var container, stats;
 			var camera, cameraTarget, scene, renderer;
-			var bShowAxisHelper = false;
+			
 
 			var loadedModels = new Array();
 			window.loadedModels = loadedModels;
+
+			var motionDetector;
+			var mouseVector = new THREE.Vector3();
+			var motionVector = new THREE.Vector3();
+
+			var modelScale = 1500;
+
+			var xStart = -2500;
+			var yStart = 1250;
+
+		    var xInc = 1000;
+		    var yInc = 750;
+
+		    var gridWidth = 6;
+		    var gridHeight = 4;
+		    
 
 			init();
 			animate();
@@ -77,7 +103,6 @@
 				camera = new THREE.PerspectiveCamera(40, window.innerWidth/window.innerHeight, 1, 10000);
 				camera.position.set( 0, 0, -5000 );
 				
-
 				dist = 1000;
 
 				vFOV = camera.fov * Math.PI / 180;        // convert vertical fov to radians
@@ -99,6 +124,10 @@
 			    }
 
 				scene.add(camera);
+
+				// add motion detector
+				motionDetector = new SimpleMotionDetector( camera );	
+				motionDetector.init();
 
 				var pointLight = new THREE.PointLight( 0xffffff );
 			    pointLight.position.set(1,1,2);
@@ -136,41 +165,51 @@
 				// }				
 				setControls();
 				//setGui();
-				setStats();
+				if (bShowStats) {
+					setStats();
+				}
+				if (bShowMotionView) {
+					setMotionView();
+				}
+			}
+
+			function setMotionView() {
+				var motionDetectorObj = container.appendChild( motionDetector.domElement );	
+				motionDetectorObj.style.left = "auto";
+				motionDetectorObj.style.top = "auto";
+				motionDetectorObj.style.right = 0;
+				motionDetectorObj.style.bottom = 0;
 			}
 
 			function loadModels() {
-				window.xPos = -2500;
-				window.yPos = 1250;
+				window.xPos = xStart;
+				window.yPos = yStart;
 				window.modelCount = 0;
 				var models = [
+					['scans/alexalex/model_mesh.obj', 'scans/alexalex/model_mesh.obj.mtl'],
+					['scans/brandon/model_mesh.obj', 'scans/brandon/model_mesh.obj.mtl'],
+					['scans/carlos-vega/model_mesh.obj', 'scans/carlos-vega/model_mesh.obj.mtl'],
+					['scans/erik/model_mesh.obj', 'scans/erik/model_mesh.obj.mtl'],
+					
+					['scans/henry-zhu/model_mesh.obj', 'scans/henry-zhu/model_mesh.obj.mtl'],
+					['scans/kelly-seefeldt/model_mesh.obj', 'scans/kelly-seefeldt/model_mesh.obj.mtl'],
 					['scans/lauren/model_mesh.obj', 'scans/lauren/model_mesh.obj.mtl'],
-					['scans/rob/model_mesh.obj', 'scans/rob/model_mesh.obj.mtl'],
-					['scans/steve/model_mesh.obj', 'scans/steve/model_mesh.obj.mtl'],
-					['scans/thom/model_mesh.obj', 'scans/thom/model_mesh.obj.mtl'],
-					['scans/travis/model_mesh.obj', 'scans/travis/model_mesh.obj.mtl'],
-					['scans/wei/model_mesh.obj', 'scans/wei/model_mesh.obj.mtl'],
+					['scans/marc/model_mesh.obj', 'scans/marc/model_mesh.obj.mtl'],
 
-					['scans/lauren/model_mesh.obj', 'scans/lauren/model_mesh.obj.mtl'],
+					['scans/marcel/model_mesh.obj', 'scans/marcel/model_mesh.obj.mtl'],
 					['scans/rob/model_mesh.obj', 'scans/rob/model_mesh.obj.mtl'],
+					['scans/spencer-sass/model_mesh.obj', 'scans/spencer-sass/model_mesh.obj.mtl'],
 					['scans/steve/model_mesh.obj', 'scans/steve/model_mesh.obj.mtl'],
-					['scans/thom/model_mesh.obj', 'scans/thom/model_mesh.obj.mtl'],
-					['scans/travis/model_mesh.obj', 'scans/travis/model_mesh.obj.mtl'],
-					['scans/wei/model_mesh.obj', 'scans/wei/model_mesh.obj.mtl'],
 
-					['scans/lauren/model_mesh.obj', 'scans/lauren/model_mesh.obj.mtl'],
-					['scans/rob/model_mesh.obj', 'scans/rob/model_mesh.obj.mtl'],
-					['scans/steve/model_mesh.obj', 'scans/steve/model_mesh.obj.mtl'],
 					['scans/thom/model_mesh.obj', 'scans/thom/model_mesh.obj.mtl'],
-					['scans/travis/model_mesh.obj', 'scans/travis/model_mesh.obj.mtl'],
+					['scans/travis/model_mesh.obj', 'scans/travis/model_mesh.obj.mtl'],					
 					['scans/wei/model_mesh.obj', 'scans/wei/model_mesh.obj.mtl'],
-
-					// ['scans/lauren/model_mesh.obj', 'scans/lauren/model_mesh.obj.mtl'],
-					// ['scans/rob/model_mesh.obj', 'scans/rob/model_mesh.obj.mtl'],
-					// ['scans/steve/model_mesh.obj', 'scans/steve/model_mesh.obj.mtl'],
-					// ['scans/thom/model_mesh.obj', 'scans/thom/model_mesh.obj.mtl'],
-					// ['scans/travis/model_mesh.obj', 'scans/travis/model_mesh.obj.mtl'],
-					// ['scans/wei/model_mesh.obj', 'scans/wei/model_mesh.obj.mtl']
+					
+					
+					
+					
+					
+					
 				];
 				for (var i=0; i<models.length; i++) {
 				    modelLoader(models[i], modelLoaded);
@@ -179,8 +218,8 @@
 
 			function modelLoaded(obj){
 		      obj.rotation.y = Math.PI;
-
-		      obj.scale.x = obj.scale.y = obj.scale.z = 1500;
+			
+		      obj.scale.x = obj.scale.y = obj.scale.z = modelScale;
 
 		      obj.position.x = xPos;
 		      obj.position.y = yPos;
@@ -189,11 +228,11 @@
 		      window.loadedModels.push(obj);
 		      scene.add(obj);
 
-		      window.xPos += 1000;
-		      if (window.modelCount%6 == 5)
+		      window.xPos += xInc;
+		      if (window.modelCount%gridWidth == gridWidth-1)
 		      {
-		      	window.yPos -= 750;
-		      	window.xPos = -2500;
+		      	window.yPos -= yInc;
+		      	window.xPos = xStart;
 		      }
 
 		      window.modelCount++;
@@ -262,13 +301,34 @@
 			}
 
 			document.onmousemove = function(event) {
-				
-				var vector = new THREE.Vector3();
+				// mouseVector.set(
+			 //    ( event.clientX / window.innerWidth ) * 2 - 1,
+			 //    - ( event.clientY / window.innerHeight ) * 2 + 1,
+			 //    0.5 );
+				mouseVector.set(
+			    	(event.clientX),
+			    	- (event.clientY),
+				0.5 );
+			}
 
-				vector.set(
-				    ( event.clientX / window.innerWidth ) * 2 - 1,
-				    - ( event.clientY / window.innerHeight ) * 2 + 1,
-				    0.5 );
+			function updateModelRotation() {
+				
+				motionVector.set(
+				    ( (motionDetector.averageX.getValue()*7) / window.innerWidth ) * 2 - 1,
+					-( (motionDetector.averageY.getValue()*7) / window.innerHeight ) * 2 + 2,
+				0.5 );
+				// motionVector.set(
+				// 	( motionDetector.averageX.getValue()*10),
+				// 	- ( motionDetector.averageY.getValue()/4),
+				// 0.5 );
+
+				//mouseVector:  THREE.Vector3 {x: 1370, y: -12, z: 0.5
+				//motionVector:  THREE.Vector3 {x: 120.7261999999997, y: -43.944, z: 0.5
+
+				console.log("mouseVector: ", mouseVector);
+				console.log("motionVector: ", motionVector);
+
+				var vector = motionVector.clone();
 
 				vector.unproject( camera );
 
@@ -286,7 +346,7 @@
 
 
 			function render() {
-
+				updateModelRotation();
 				camera.lookAt( cameraTarget );
 				renderer.render( scene, camera );				
 			}

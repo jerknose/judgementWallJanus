@@ -5,7 +5,7 @@ var modelLoader=function(modelFiles, callback){
     var onProgress = function ( xhr ) {
       if ( xhr.lengthComputable ) {
         var percentComplete = xhr.loaded / xhr.total * 100;
-        console.log( Math.round(percentComplete, 2) + '% downloaded' );
+        //console.log( Math.round(percentComplete, 2) + '% downloaded' );
       }
     };
 
@@ -17,14 +17,14 @@ var modelLoader=function(modelFiles, callback){
       THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
       loader = new THREE.OBJMTLLoader();
       loader.load(modelFiles[0], modelFiles[1] , function ( object ) {
-        console.log("obj model loaded:", modelFiles[0]);
+        //console.log("obj model loaded:", modelFiles[0]);
         callback( object );
       }, onProgress, onError );
     }
     else if (modelFiles[0].split('.').pop() == "stl") {
       loader = new THREE.STLLoader();
       loader.load(modelFiles[0] , function ( event ) {
-        console.log("stl model loaded:", modelFiles[0]);
+        // console.log("stl model loaded:", modelFiles[0]);
         // var geometry = event.content;
         var geometry = event;
         var material = new THREE.MeshPhongMaterial();

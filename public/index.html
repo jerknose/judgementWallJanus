@@ -7,9 +7,16 @@
 		<style>
 			body {
 				font-family: Monospace;
-				background-color: #000000;
+				background-color: #FFFFFF;
 				margin: 0px;
 				overflow: hidden;
+			}
+
+			#container {
+				width: 1920px;/*1280px;*/
+				height: 1080px;/*720px;*/
+				position: relative;
+				background: #000000;
 			}
 
 			#info {
@@ -36,66 +43,60 @@
 		</style>
 	</head>
 	<body>
-		<script src="js/three.min.js"></script>
 
-		<script src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<!--<script type="text/javascript" src="js/tween.min.js"></script>-->
+		<script type="text/javascript" src="js/Tween.js"></script>
 
-		<script src="js/loaders/DDSLoader.js"></script>
-        <script src="js/loaders/MTLLoader.js"></script>
-        <script src="js/loaders/OBJMTLLoader.js"></script>
-        <script src="js/loaders/STLLoader.js"></script>
-        <script src="js/modelLoader.js"></script>
+		<script type="text/javascript" src="js/three.min.js"></script>
+
+		
+		<script type="text/javascript" src="js/loaders/DDSLoader.js"></script>
+        <script type="text/javascript" src="js/loaders/MTLLoader.js"></script>
+        <script type="text/javascript" src="js/loaders/OBJMTLLoader.js"></script>
+        <script type="text/javascript" src="js/loaders/STLLoader.js"></script>
+        <script type="text/javascript" src="js/modelLoader.js"></script>
 
         <script type="text/javascript" src="js/glfx-neu.js"></script>
         <script type="text/javascript" src="js/moving-averager.js"></script>
         <script type="text/javascript" src="js/simple-motion-detector.js"></script>
 
 		
-		<script src="js/controls/OrbitControls.js"></script>		
-		<script src="js/Detector.js"></script>
-		<script src="js/libs/stats.min.js"></script>
-		<script src="js/libs/dat.gui.min.js"></script>
+		<script type="text/javascript" src="js/controls/OrbitControls.js"></script>		
+		<script type="text/javascript" src="js/Detector.js"></script>
+		<script type="text/javascript" src="js/libs/stats.min.js"></script>
+		<script type="text/javascript" src="js/libs/dat.gui.min.js"></script>
+
+		<script type="text/javascript" src="js/person.js"></script>
+		<script type="text/javascript" src="js/people.js"></script>
+
 		<script>
 			//init
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
-
-			var bShowAxisHelper = false;
-			var bShowStats = true;
-			var bShowMotionView = false;
+			var showConfig = true;
+			var useMouse = false;
 
 			var container, stats;
 			var camera, cameraTarget, scene, renderer;
 			
-
-			var loadedModels = new Array();
-			window.loadedModels = loadedModels;
+			window.modelInfo = new Array();
+			window.loadedModels = new Array();
 
 			var motionDetector;
 			var mouseVector = new THREE.Vector3();
 			var motionVector = new THREE.Vector3();
 
+			var lookMesh;
+
 			var modelScale = 1500;
-
-			var sceneWidth = 5000;
-			var sceneHeight = 2500;
-
-			var xStart = -sceneWidth/2;
-			var yStart = sceneHeight/2;
 
 		    var gridWidth = 5;
 		    var gridHeight = 3;
-
-		    var xInc = sceneWidth/(gridWidth-1);
-		    var yInc = sceneHeight/(gridHeight-1);
-
-
-		    // var xInc = 1000;
-		    // var yInc = 750;
-
-		    // var gridWidth = 6;
-		    // var gridHeight = 4;
 		    
+		    window.movePerson;
+
+		    window.people;
 
 			init();
 			animate();
@@ -110,9 +111,10 @@
 				
 		        //threejs container init
 				container = document.createElement( 'div' );
+				container.id = "container";
 				document.body.appendChild( container );
 
-				camera = new THREE.PerspectiveCamera(40, window.innerWidth/window.innerHeight, 1, 10000);
+				camera = new THREE.PerspectiveCamera(40, $("#container").width()/$("#container").height(), 1, 10000);
 				camera.position.set( 0, 0, -5000 );
 				
 				dist = 1000;
@@ -120,7 +122,7 @@
 				vFOV = camera.fov * Math.PI / 180;        // convert vertical fov to radians
 				height = 2 * Math.tan( vFOV / 2 ) * dist; // visible height
 
-				aspect = window.innerWidth / window.innerHeight;
+				aspect = $("#container").width() / $("#container").height();
 				width = height * aspect;                  // visible width
 
 
@@ -130,7 +132,7 @@
 				scene = new THREE.Scene();
 				//threejs model loading
 
-				if (bShowAxisHelper == true) {
+				if (showConfig == true) {
 			      var axisHelper = new THREE.AxisHelper( 500 );
 			      scene.add( axisHelper );
 			    }
@@ -149,20 +151,26 @@
 			    window.hemiLight = hemiLight;
 			    scene.add(hemiLight);
 
-			    $.getJSON( "/getScanFolders", function( dirData ) {
-					loadModels(dirData["scanDirs"]);
+				people = new People(scene, {
+					"gridDimensions":{"width":this.gridWidth,"height":this.gridHeight},
+					"maxPopulation":gridWidth*gridHeight,
+					"modelScale": this.modelScale
 				});
+				getScans("load");
 
-				
+				setInterval(function(){
+					getScans("update");					
+				},5000);
 
 				// renderer
 				renderer = new THREE.WebGLRenderer({
 				  precision   : 'highp',
 				  //preserveDrawingBuffer: true,
 				  antialiasing: true,
-				  alpha       : true
+				  // alpha       : true
 				});
-				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setSize( $("#container").width(), $("#container").height() );
+				renderer.domElement.id = "threeCanvas";
 				// renderer.gammaInput = true;
 				// renderer.gammaOutput = true;
 				// renderer.shadowMapEnabled = true;
@@ -171,22 +179,40 @@
 				
 				// keep it big
 				window.addEventListener( 'resize', onWindowResize, false );
-				// window.onkeyup = function(e) {
-				// 	var key = e.keyCode ? e.keyCode : e.which;
-				// 	if (key == 38) {
-				// 		rotationSpeed += .5;
-				// 	}else if (key == 40) {
-				// 		rotationSpeed -= .5;
-				// 	}
-				// }				
+				
 				setControls();
 				//setGui();
-				if (bShowStats) {
+				if (showConfig) {
 					setStats();
-				}
-				if (bShowMotionView) {
 					setMotionView();
+					createLookTarget();
 				}
+			}
+
+			function getScans(type) {
+				console.log("Getting scan directories...");
+				var people = this.people;
+				$.getJSON('/getDirectoryInfo', 
+			     {
+			        parentDir: 'scans/'
+			     }, 
+			     function( dirData ) {
+			    	window.modelInfo = dirData["directories"];
+					if (type == "load") {
+						people.loadPopulous(window.modelInfo);
+					}
+					else if (type == "update") {
+						people.updatePopulous(window.modelInfo);
+					}
+				});
+			}
+
+			function createLookTarget() {
+				var lookGeo = new THREE.BoxGeometry(100,100,100);
+				var lookMaterial = new THREE.MeshBasicMaterial({color:0xFFFFFF});
+				this.lookMesh = new THREE.Mesh(lookGeo, lookMaterial);
+				lookMesh.position.copy(new THREE.Vector3(0,0,0));
+				this.scene.add(lookMesh);
 			}
 
 			function setMotionView() {
@@ -196,38 +222,6 @@
 				motionDetectorObj.style.right = 0;
 				motionDetectorObj.style.bottom = 0;
 			}
-
-			function loadModels(modelDirs) {
-				window.xPos = xStart;
-				window.yPos = yStart;
-				window.modelCount = 0;
-				
-				for (var i=0; i<modelDirs.length; i++) {
-				    modelLoader(['scans/'+modelDirs[i]+'/model_mesh.obj', 'scans/'+modelDirs[i]+'/model_mesh.obj.mtl'], modelLoaded);
-				}
-			}
-
-			function modelLoaded(obj){
-		      obj.rotation.y = Math.PI;
-			
-		      obj.scale.x = obj.scale.y = obj.scale.z = modelScale;
-
-		      obj.position.x = xPos;
-		      obj.position.y = yPos;
-		      obj.position.z = 0;
-
-		      window.loadedModels.push(obj);
-		      scene.add(obj);
-
-		      window.xPos += xInc;
-		      if (window.modelCount%gridWidth == gridWidth-1)
-		      {
-		      	window.yPos -= yInc;
-		      	window.xPos = xStart;
-		      }
-
-		      window.modelCount++;
-		    }
 
 			function setStats() {
 				// stats
@@ -273,15 +267,16 @@
 				//var radius = sphere.geometry.boundingSphere.radius;
 				controls = new THREE.OrbitControls( camera );
 				controls.target = new THREE.Vector3( 0, 0, 0 );
-				//controls.noPan = true;
-				//controls.noRotate = true;
+				controls.noPan = true;
+				controls.noRotate = true;
 				controls.noZoom = true;
+				controls.noKeys = true;
 				controls.update();
 			}
 			function onWindowResize() {
-				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.aspect = $("#container").width() / $("#container").height();
 				camera.updateProjectionMatrix();
-				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setSize( $("#container").width(), $("#container").height() );
 			}
 			function animate() {
 				requestAnimationFrame( animate );
@@ -293,54 +288,44 @@
 
 			document.onmousemove = function(event) {
 				mouseVector.set(
-			    ( event.clientX / window.innerWidth ) * 2 - 1,
-			    - ( event.clientY / window.innerHeight ) * 2 + 1,
+			    ( event.clientX / $("#container").width()) * 2 - 1,
+			    - ( event.clientY / $("#container").height() ) * 2 + 1,
 			    0.5 );
-				// mouseVector.set(
-			 //    	(event.clientX),
-			 //    	- (event.clientY),
-				// 0.5 );
 			}
 
-			function updateModelRotation() {
-				
-				motionVector.set(
-				    (motionDetector.averageX.getValue() / 256 ) * 2 - 1,
-					-(motionDetector.averageY.getValue() / 80 ) * 2 + 2,
-				-0.5 );
+			function getLookVector() {			
+				var motionVector;
 
-				// console.log(""+motionDetector.averageX.getValue()+ " : " + motionDetector.averageY.getValue());
-				// motionVector.set(
-				// 	( motionDetector.averageX.getValue()*10),
-				// 	- ( motionDetector.averageY.getValue()/4),
-				// 0.5 );
-
-				//mouseVector:  THREE.Vector3 {x: 1370, y: -12, z: 0.5
-				//motionVector:  THREE.Vector3 {x: 120.7261999999997, y: -43.944, z: 0.5
-
-				// console.log("mouseVector: ", mouseVector);
-				// console.log("motionVector: ", motionVector);
+				if (useMouse) {
+					motionVector = mouseVector;
+				}
+				else {
+					motionVector = new THREE.Vector3(
+						(motionDetector.averageX.getValue() / 256 ) * 2 - 1,
+						-(motionDetector.averageY.getValue() / 80 ) * 2 + 2,
+						-0.5 );
+				}
 
 				var vector = motionVector.clone();
-				// var vector = mouseVector.clone();
-
 				vector.unproject( camera );
 
 				var dir = vector.sub( camera.position ).normalize();
+				var distance = - (camera.position.z / dir.z)/1.25;
 
-				var distance = - (camera.position.z / dir.z)/1.5;
+				var lookVector = camera.position.clone().add( dir.multiplyScalar( distance ) );
 
-				var pos = camera.position.clone().add( dir.multiplyScalar( distance ) );
-
-				for (var i=0; i<window.loadedModels.length; i++) {
-					window.loadedModels[i].lookAt(pos);
+				if (showConfig) {
+					lookMesh.position.copy(lookVector);
 				}
+
+				return lookVector;
 			}
 
 
 
 			function render() {
-				updateModelRotation();
+				people.update(getLookVector());
+				TWEEN.update();
 				camera.lookAt( cameraTarget );
 				renderer.render( scene, camera );				
 			}

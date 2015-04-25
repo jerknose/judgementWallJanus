@@ -49,7 +49,8 @@
 		<script type="text/javascript" src="js/Tween.js"></script>
 
 		<script type="text/javascript" src="js/three.min.js"></script>
-
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="js/oscControl.js"></script>
 		
 		<script type="text/javascript" src="js/loaders/DDSLoader.js"></script>
         <script type="text/javascript" src="js/loaders/MTLLoader.js"></script>
@@ -79,6 +80,7 @@
 
 			var container, stats;
 			var camera, cameraTarget, scene, renderer;
+			var oscControl;
 			
 			window.modelInfo = new Array();
 			window.loadedModels = new Array();
@@ -86,13 +88,14 @@
 			var motionDetector;
 			var mouseVector = new THREE.Vector3();
 			var motionVector = new THREE.Vector3();
+			var bUseVideo = false;
 
 			var lookMesh;
 
 			var modelScale = 1500;
 
-		    var gridWidth = 5;
-		    var gridHeight = 3;
+		    var gridWidth = 2;
+		    var gridHeight = 2;
 		    
 		    window.movePerson;
 
@@ -138,6 +141,7 @@
 			    }
 
 				scene.add(camera);
+				oscControl = new OscControl();
 
 				// add motion detector
 				motionDetector = new SimpleMotionDetector( camera );	
@@ -294,16 +298,19 @@
 			}
 
 			function getLookVector() {			
-				var motionVector;
+				// var motionVector;
 
-				if (useMouse) {
-					motionVector = mouseVector;
-				}
-				else {
-					motionVector = new THREE.Vector3(
-						(motionDetector.averageX.getValue() / 256 ) * 2 - 1,
-						-(motionDetector.averageY.getValue() / 80 ) * 2 + 2,
-						-0.5 );
+				// if (useMouse) {
+				// 	motionVector = mouseVector;
+				// }
+				// else {
+				if(bUseVideo){
+					var	motionFromVideo = new THREE.Vector3(
+							(motionDetector.averageX.getValue() / 256 ) * 2 - 1,
+							-(motionDetector.averageY.getValue() / 80 ) * 2 + 2,
+							-0.5 );
+					// }
+					motionVector.copy(motionFromVideo);
 				}
 
 				var vector = motionVector.clone();

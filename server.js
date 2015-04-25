@@ -4,8 +4,27 @@ var express = require('express'),
     app=express(),
     http=require('http'),
     server = http.createServer(app),
+    io=require('socket.io').listen(server, {log:false}),
+    osc=require('node-osc/lib/osc.js'),
     st = require('node-static'),
     fs=require('fs');
+
+io.set('log level', 1);
+var oscServer, oscClient;
+oscServer = new osc.Server(3333, '0.0.0.0'); //listening on 3333
+// oscClient = new osc.Cliend('127.0.0.1', 3333);
+
+// oscClient.send('/connection', 1);
+
+var connectedSockets=[];
+
+oscServer.on('message', function(msg, rinfo){
+  console.log(msg[2]);
+  connectedSockets.forEach(function(s){
+    s.emit("oscdata", msg[2]);
+  })
+})
+
 
 server.listen(8080);
 
@@ -36,3 +55,17 @@ app.get('/getDirectoryInfo', function (req, res) {
     res.json({ directories: self.myfiles })
   });
 });
+
+io.sockets.on('connection', function(socket){
+  connectedSockets.push(socket);
+  console.log('a new connection, num of connections is '+(connectedSockets.length));
+
+  socket.on('disconnect', function(){
+    var idx = connectedSockets.indexOf(socket);
+    connectedSockets.splice(idx,1);
+
+    console.log('disconnected, remaining connections: '+ (connectedSockets.length));
+  });
+
+
+})

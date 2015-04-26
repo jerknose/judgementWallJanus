@@ -22,9 +22,9 @@ OscControl.prototype.processOSCData=function(msg){
 	if(msg[1]>0){
 		motionVector.x = z*motionVector.x + (1-z)*map(msg[1], 0, 640, -1, 1);
 		motionVector.y = z*motionVector.y + (1-z)*map(msg[2], 0, 480, 1, -1);
+		bFoundTarget = true;
 	}else{
-		motionVector.x += (Math.random()-0.5)*0.01;
-		motionVector.y += (Math.random()-0.5)*0.01;
+		bFoundTarget = false;
 	}
 };
 

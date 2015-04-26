@@ -11,6 +11,7 @@ var Person = function(scene, personInfo) {
 
 	this.duration = 5000;
 	this.isMoving = false;
+	this.wonderRate = 0.0;
 };
 
 Person.prototype.add = function() {
@@ -77,3 +78,9 @@ Person.prototype.update = function(pos) {
 
 	this.personObj.lookAt(pos);
 };
+
+Person.prototype.wonder = function(){
+	this.wonderRate += (Math.random()-0.5)*0.01;
+	this.personObj.rotateY(this.wonderRate);
+};
+

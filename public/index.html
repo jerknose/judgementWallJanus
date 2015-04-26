@@ -89,6 +89,7 @@
 			var mouseVector = new THREE.Vector3();
 			var motionVector = new THREE.Vector3();
 			var bUseVideo = false;
+			var bFoundTarget = true;
 
 			var lookMesh;
 
@@ -331,7 +332,11 @@
 
 
 			function render() {
-				people.update(getLookVector());
+				if(bFoundTarget){
+					people.update(getLookVector());
+				}else{
+					people.wonder();
+				}
 				TWEEN.update();
 				camera.lookAt( cameraTarget );
 				renderer.render( scene, camera );				

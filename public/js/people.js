@@ -82,6 +82,12 @@ People.prototype.update = function(pos) {
 	}
 };
 
+People.prototype.wonder = function(){
+	for (var p = 0; p < this.populous.length; p++) {
+		this.populous[p].wonder();
+	}
+};
+
 People.prototype.createLayout = function() {
 	var sceneWidth = $("#container").width()*1.95;
 	var sceneHeight = $("#container").height()*1.75;

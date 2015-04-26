@@ -77,6 +77,7 @@ Person.prototype.update = function(pos) {
 	}
 
 	this.personObj.lookAt(pos);
+	this.wonderRate *=0.99;
 };
 
 Person.prototype.wonder = function(){

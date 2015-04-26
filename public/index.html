@@ -75,7 +75,7 @@
 			//init
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
-			var showConfig = true;
+			var showConfig = false;
 			var useMouse = false;
 
 			var container, stats;
@@ -85,7 +85,7 @@
 			window.modelInfo = new Array();
 			window.loadedModels = new Array();
 
-			var motionDetector;
+			// var motionDetector;
 			var mouseVector = new THREE.Vector3();
 			var motionVector = new THREE.Vector3();
 			var bUseVideo = false;
@@ -94,8 +94,8 @@
 
 			var modelScale = 1500;
 
-		    var gridWidth = 2;
-		    var gridHeight = 2;
+		    var gridWidth = 5;
+		    var gridHeight = 3;
 		    
 		    window.movePerson;
 
@@ -144,8 +144,8 @@
 				oscControl = new OscControl();
 
 				// add motion detector
-				motionDetector = new SimpleMotionDetector( camera );	
-				motionDetector.init();
+				// motionDetector = new SimpleMotionDetector( camera );	
+				// motionDetector.init();
 
 				var pointLight = new THREE.PointLight( 0xffffff );
 			    pointLight.position.set(1,1,2);
@@ -188,7 +188,7 @@
 				//setGui();
 				if (showConfig) {
 					setStats();
-					setMotionView();
+					// setMotionView();
 					createLookTarget();
 				}
 			}

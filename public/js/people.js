@@ -83,8 +83,8 @@ People.prototype.update = function(pos) {
 };
 
 People.prototype.createLayout = function() {
-	var sceneWidth = $("#container").width()*2.55;
-	var sceneHeight = $("#container").height()*2;
+	var sceneWidth = $("#container").width()*1.95;
+	var sceneHeight = $("#container").height()*1.75;
 
 	var xStart = -sceneWidth/2;
 	var yStart = sceneHeight/2;

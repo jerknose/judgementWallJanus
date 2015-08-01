@@ -19,8 +19,8 @@ OscControl.prototype.init=function(){
 
 OscControl.prototype.processOSCData=function(msg){
 	var z=0.9;
-	if(msg[1]>0){
-		motionVector.x = z*motionVector.x + (1-z)*map(msg[1], 0, 640, -1, 1);
+	if(msg[1]>0 && motionVector){
+		motionVector.x = z*motionVector.x + (1-z)*map(msg[1], 0, 640, 1, -1);
 		motionVector.y = z*motionVector.y + (1-z)*map(msg[2], 0, 480, 1, -1);
 		bFoundTarget = true;
 	}else{

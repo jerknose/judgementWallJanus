@@ -9,6 +9,7 @@ var People = function(scene, params) {
 	this.gridDimensions = params.gridDimensions;
 
 	this.createLayout();
+	// this.centerLayout();
 };
 
 People.prototype.loadPopulous = function(peopleInfo) {
@@ -89,8 +90,8 @@ People.prototype.wonder = function(){
 };
 
 People.prototype.createLayout = function() {
-	var sceneWidth = $("#container").width()*1.95;
-	var sceneHeight = $("#container").height()*1.75;
+	var sceneWidth = $("#container").width()*2.75;
+	var sceneHeight = $("#container").height()*2.25;
 
 	var xStart = -sceneWidth/2;
 	var yStart = sceneHeight/2;
@@ -111,6 +112,13 @@ People.prototype.createLayout = function() {
 		}
 	}
 	// this.shuffleLocations();
+}
+
+People.prototype.centerLayout = function() {
+	for (var i=0; i<this.maxPopulation; i++) {
+
+		this.locations.unshift(new THREE.Vector3(0, 0, 0));
+	}
 }
 
 People.prototype.shuffleLocations = function() {

@@ -27,6 +27,7 @@ oscServer.on('message', function(msg, rinfo){
 
 
 server.listen(8080);
+console.log("Server started on port 8080.");
 
 app.use(express.static(__dirname + "/public"));
 

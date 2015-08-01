@@ -13,6 +13,12 @@ var modelLoader=function(modelFiles, callback, scope){
     };
 
     var loader;
+    if (modelFiles[0].split('.').pop() == "dae") {
+      var loader = new THREE.ColladaLoader();
+      loader.load(modelFiles[0], function (object) {
+        callback( object.scene, scope );
+      }, onProgress, onError );
+    }
     if (modelFiles[0].split('.').pop() == "obj") {
       THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
       loader = new THREE.OBJMTLLoader();

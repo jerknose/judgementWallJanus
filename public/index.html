@@ -52,6 +52,7 @@
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="js/oscControl.js"></script>
 		
+		<script type="text/javascript" src="js/loaders/ColladaLoader.js"></script>
 		<script type="text/javascript" src="js/loaders/DDSLoader.js"></script>
         <script type="text/javascript" src="js/loaders/MTLLoader.js"></script>
         <script type="text/javascript" src="js/loaders/OBJMTLLoader.js"></script>
@@ -76,8 +77,7 @@
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 			var showConfig = false;
-			var useMouse = false;
-
+			
 			var container, stats;
 			var camera, cameraTarget, scene, renderer;
 			var oscControl;
@@ -93,7 +93,7 @@
 
 			var lookMesh;
 
-			var modelScale = 1500;
+			var modelScale = 1;
 
 		    var gridWidth = 5;
 		    var gridHeight = 3;
@@ -299,12 +299,6 @@
 			}
 
 			function getLookVector() {			
-				// var motionVector;
-
-				// if (useMouse) {
-				// 	motionVector = mouseVector;
-				// }
-				// else {
 				if(bUseVideo){
 					var	motionFromVideo = new THREE.Vector3(
 							(motionDetector.averageX.getValue() / 256 ) * 2 - 1,
@@ -312,6 +306,9 @@
 							-0.5 );
 					// }
 					motionVector.copy(motionFromVideo);
+				}
+				else {
+					motionVector = mouseVector;
 				}
 
 				var vector = motionVector.clone();

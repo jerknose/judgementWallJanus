@@ -8,14 +8,17 @@ var People = function(scene, params) {
 	this.maxPopulation = params.maxPopulation;
 	this.gridDimensions = params.gridDimensions;
 
-	this.createLayout();
-	// this.centerLayout();
+	// this.gridLayout();
+	this.centerLayout();
 };
 
 People.prototype.loadPopulous = function(peopleInfo) {
 	console.log("Loading initial populous...");
 	for (var i = 0; i < this.maxPopulation; i++) {
-		this.add(peopleInfo[i]);
+		// console.log(i);
+		if (peopleInfo[i]) {
+			this.add(peopleInfo[i]);
+		}
 	};
 	this.distributePopulous();
 };
@@ -32,13 +35,14 @@ People.prototype.updatePopulous = function(peopleInfo) {
 		var people = scope.populous;
 		
 		people.forEach(function(person){
-			if (person.name == personInfo.name) {
-				match = true;
-			
+			if (personInfo) {
+				if (person.name == personInfo.name) {
+					match = true;
+				}
 			}
 		});
 		
-		if (match == false) {
+		if (match == false && personInfo) {
 			scope.removeOldest();
 			scope.addNewComer(personInfo);
 			this.distributePopulous();
@@ -59,6 +63,7 @@ People.prototype.removeOldest = function() {
 
 People.prototype.add = function(personInfo) {
 	console.log("Adding resident...");
+
 	personInfo.modelScale = this.modelScale;
 
 	var person = new Person(this.scene, personInfo);
@@ -89,12 +94,18 @@ People.prototype.wonder = function(){
 	}
 };
 
-People.prototype.createLayout = function() {
-	var sceneWidth = $("#container").width()*2.75;
-	var sceneHeight = $("#container").height()*2.25;
+People.prototype.move = function(pos){
+	for (var p = 0; p < this.populous.length; p++) {
+		this.populous[p].move(pos, 1000);
+	}
+};
+
+People.prototype.gridLayout = function() {
+	var sceneWidth = $("#container").width()*3.25;
+	var sceneHeight = $("#container").height()*3;
 
 	var xStart = -sceneWidth/2;
-	var yStart = sceneHeight/2;
+	var yStart = sceneHeight/2-500;
 
     var xInc = sceneWidth/(this.gridDimensions.width-1);
     var yInc = sceneHeight/(this.gridDimensions.height-1);

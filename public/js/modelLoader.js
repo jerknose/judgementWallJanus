@@ -33,7 +33,7 @@ var modelLoader=function(modelFiles, callback, scope){
         // console.log("stl model loaded:", modelFiles[0]);
         // var geometry = event.content;
         var geometry = event;
-        var material = new THREE.MeshPhongMaterial();
+        var material = new THREE.MeshPhongMaterial({wireframe:false});
         // var material = new THREE.MeshPhongMaterial( { transparent: true, opacity: 0.8, refractionRatio: 0.995, reflectivity: 0.5});
         var stlmesh = new THREE.Mesh( geometry, material );
         callback(stlmesh, scope);

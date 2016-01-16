@@ -19,7 +19,7 @@ oscServer = new osc.Server(3333, '0.0.0.0'); //listening on 3333
 var connectedSockets=[];
 
 oscServer.on('message', function(msg, rinfo){
-  console.log(msg[2]);
+  // console.log(msg[2]);
   connectedSockets.forEach(function(s){
     s.emit("oscdata", msg[2]);
   })
@@ -49,13 +49,19 @@ app.get('/getDirectoryInfo', function (req, res) {
       return fs.statSync(rootDir + b).mtime.getTime() - fs.statSync(rootDir + a).mtime.getTime();
     });
     files.forEach(function(file){
-      if(fs.statSync( path.join(rootDir + file) ).isDirectory()){
-        self.myfiles.push({"name": file, "fullPath": req.query.parentDir + file, "dateAdded": fs.statSync(rootDir + file).mtime.getTime()});
+      if (!isUnixHiddenPath(file)) {
+        if (!fs.statSync( path.join(rootDir + file) ).isDirectory()){
+          self.myfiles.push({"name": file, "fullPath": req.query.parentDir + file, "dateAdded": fs.statSync(rootDir + file).mtime.getTime()});
+        }
       }
     });
     res.json({ directories: self.myfiles })
   });
 });
+
+var isUnixHiddenPath = function (path) {
+    return (/(^|\/)\.[^\/\.]/g).test(path);
+};
 
 io.sockets.on('connection', function(socket){
   connectedSockets.push(socket);

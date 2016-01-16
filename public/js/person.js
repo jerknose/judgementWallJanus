@@ -9,13 +9,15 @@ var Person = function(scene, personInfo) {
 
 	this.targetPos = new THREE.Vector3(0,0,0);
 
-	this.duration = 5000;
+	this.duration = config.person.moveDuration;
 	this.isMoving = false;
-	this.wonderRate = 0.0;
+	this.wonderRateX = 0.0;
+	this.wonderRateY = 0.0;
+	this.wonderRateZ = 0.0;
 };
 
 Person.prototype.add = function() {
-	modelLoader([this.fullPath+'/UCAV.dae'], this.modelLoaded, this);
+	modelLoader([this.fullPath], this.modelLoaded, this);
 };
 
 Person.prototype.move=function(pos, duration) {
@@ -58,18 +60,11 @@ Person.prototype.modelLoaded = function(obj, scope){
 	scope.personObj = obj;
 	// scope.personObj.visible = false;
 
-	scope.personObj.rotation.y = Math.PI;
-	
+	scope.personObj.rotation.y = -Math.PI;
+
 	scope.personObj.scale.x = scope.personObj.scale.y = scope.personObj.scale.z = scope.modelScale;
 
 	scope.scene.add(scope.personObj);
-
-	// if (scope.personObj.position !== scope.targetPos) {
-	// 	scope.moveTween(scope.targetPos, scope.duration);
-	// }
-	console.log("object loaded: ", obj);
-
-	// scope.move(new THREE.Vector3(0,0,0), 100);
 };
 
 Person.prototype.update = function(pos) {
@@ -81,16 +76,27 @@ Person.prototype.update = function(pos) {
 	}
 
 	this.personObj.lookAt(pos);
-	this.wonderRate *=0.99;
+	this.wonderRateX *=0.99;
+	this.wonderRateY *=0.99;
+	this.wonderRateZ *=0.99;
 };
 
 Person.prototype.wonder = function(){
 	if (this.personObj==null) {
 		return;
 	}
-	this.wonderRate += (Math.random()-0.5)*0.01;
-	this.wonderRate = limit(this.wonderRate, -0.05, 0.05);
-	this.personObj.rotateY(this.wonderRate);
+	this.wonderRateX += (Math.random()-0.5)*0.0025;
+	this.wonderRateX = limit(this.wonderRateX, -0.05, 0.05);
+
+	this.wonderRateY += (Math.random()-0.5)*0.0025;
+	this.wonderRateY = limit(this.wonderRateY, -0.05, 0.05);
+
+	this.wonderRateZ += (Math.random()-0.5)*0.0025;
+	this.wonderRateZ = limit(this.wonderRateZ, -0.05, 0.05);
+
+	this.personObj.rotateX(this.wonderRateX);
+	this.personObj.rotateY(this.wonderRateY);
+	this.personObj.rotateZ(this.wonderRateZ);
 	if (this.personObj.position !== this.targetPos && this.isMoving == false) {
 		this.moveTween(this.targetPos, this.duration);
 	}

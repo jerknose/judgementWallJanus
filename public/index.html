@@ -52,7 +52,7 @@
 		<script type="text/javascript" src="js/Tween.js"></script>
 
 		<script type="text/javascript" src="js/three.min.js"></script>
-		<script src="/socket.io/socket.io.js"></script>
+		<script src="socket.io/socket.io.js"></script>
 		<script src="js/oscControl.js"></script>
 		
 		<script type="text/javascript" src="js/loaders/ColladaLoader.js"></script>
@@ -316,7 +316,7 @@
 			function getScans(type) {
 				console.log("Getting scan directories...");
 				var people = this.people;
-				$.getJSON('/getDirectoryInfo', 
+				$.getJSON('getDirectoryInfo', 
 			     {
 			        parentDir: 'scans_small/'
 			     }, 

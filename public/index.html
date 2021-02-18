@@ -10,11 +10,14 @@
 				background-color: #FFFFFF;
 				margin: 0px;
 				overflow: hidden;
+				position: absolute;
+				width: 100%;
+				height: 100%;
 			}
 
 			#container {
-				width: 1280px;/*1280px;*/
-				height: 720px;/*720px;*/
+				width: 100%;/*1280px;*/
+				height: 100%;/*720px;*/
 				position: relative;
 				background: #000000;
 			}
@@ -132,7 +135,7 @@
 
 			var lookMesh;
 
-			var modelScale = 9;
+			var modelScale = 300;
 
 		    var gridWidth = 5;
 		    var gridHeight = 3;
@@ -315,7 +318,7 @@
 				var people = this.people;
 				$.getJSON('/getDirectoryInfo', 
 			     {
-			        parentDir: 'scans/'
+			        parentDir: 'scans_small/'
 			     }, 
 			     function( dirData ) {
 			    	window.modelInfo = dirData["directories"];

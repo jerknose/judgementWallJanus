@@ -47,7 +47,7 @@
 		<link rel="stylesheet" href="//code.jquery.com/ui/1.7.2/themes/smoothness/jquery-ui.css">
 		<script type="text/javascript" src="js/jquery.js"></script>
 		<script src="//code.jquery.com/ui/1.7.2/jquery-ui.js"></script>
-		<!--<script type="text/javascript" src="js/tween.min.js"></script>-->
+		
 		<script type="text/javascript" src="js/Tween.js"></script>
 
 		<script type="text/javascript" src="js/three.min.js"></script>
@@ -56,16 +56,15 @@
 		
 		<script type="text/javascript" src="js/loaders/ColladaLoader.js"></script>
 		<script type="text/javascript" src="js/loaders/DDSLoader.js"></script>
-        <script type="text/javascript" src="js/loaders/MTLLoader.js"></script>
-        <script type="text/javascript" src="js/loaders/OBJMTLLoader.js"></script>
-        <script type="text/javascript" src="js/loaders/STLLoader.js"></script>
-        <script type="text/javascript" src="js/modelLoader.js"></script>
+		<script type="text/javascript" src="js/loaders/MTLLoader.js"></script>
+		<script type="text/javascript" src="js/loaders/OBJMTLLoader.js"></script>
+		<script type="text/javascript" src="js/loaders/STLLoader.js"></script>
+		<script type="text/javascript" src="js/modelLoader.js"></script>
 
-        <script type="text/javascript" src="js/glfx-neu.js"></script>
-        <script type="text/javascript" src="js/moving-averager.js"></script>
-        <script type="text/javascript" src="js/simple-motion-detector.js"></script>
+		<script type="text/javascript" src="js/glfx-neu.js"></script>
+		<script type="text/javascript" src="js/moving-averager.js"></script>
+		<script type="text/javascript" src="js/simple-motion-detector.js"></script>
 
-		
 		<script type="text/javascript" src="js/controls/OrbitControls.js"></script>		
 		<script type="text/javascript" src="js/Detector.js"></script>
 		<script type="text/javascript" src="js/libs/stats.min.js"></script>
@@ -77,30 +76,15 @@
 		<script type="text/javascript" src="js/config.js"></script>
 		<script type="text/javascript" src="js/cameraControl.js"></script>
 
-		<script>function initDialog()
+		<script>
+			function initDialog()
 			{
-					// var innerDiv = $("`<div>`");
-					// $(innerDiv).attr({'id' : 'testDialog'});
-					// var textBox = $("`<textarea>`");
-					// $(textBox).attr({'id' : 'testBox', 'rows' : '2'});
-			
-					// $(innerDiv).append(textBox).appendTo('body');
-					// $('#testDialog').css('visibility', 'hidden');
-			
-					$('#testDialog').dialog({
-							autoOpen    : true,
-							width       : '50%',
-					// 		buttons     : 
-					// 		{
-					// 		"Alert" : function() {
-					// 				alert($('#testBox').val());
-					// 		} 
-					// }
-			
-			});
+				$('#testDialog').dialog({
+						autoOpen    : true,
+						width       : '50%',
+				});
 			}   
 			
-			//Show the hidden dialog.
 			function showDialog()
 			{
 					$('#testDialog').css('visibility', 'visible');
@@ -109,11 +93,8 @@
 			}  
 			window.onload = function() {
 					initDialog();
-					// $('#mylink').click(function(){
-							// showDialog();
-					// });
-			
-			}</script>
+			}
+		</script>
 	</head>
 	<body>
 		<div id="testDialog">
@@ -121,7 +102,7 @@
 			<h5>by Travis Bennett (<a href="https://www.travisbennett.com/" target="_blank">travisbennett.com</a>)</h5>
 			<p>Disclaimer: Designed to run locally, hooked to a Kinect v1, projected on a wall. It is provided as is, for posterity.</p>
 			<p>Be patient. This project loads several large files. Things may be slow and / or buggy.</p>
-			<p><a href="https://www.travisbennett.com/all/judgement-wall-janus-debuts-at-cal-academy-night-live" target="_blank">More Info</a></p>
+			<p><a href="https://www.travisbennett.com/all/judgement-wall-janus" target="_blank">More Info</a></p>
 		</div>
 		<script type="x-shader/x-vertex" id="vertexShader">
 

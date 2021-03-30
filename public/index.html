@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - STL</title>
+		<title>Judgement Wall Janus - 2015 - by Travis Bennett</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -44,10 +44,9 @@
 				text-align: center;
 			}
 		</style>
-	</head>
-	<body>
-
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.7.2/themes/smoothness/jquery-ui.css">
 		<script type="text/javascript" src="js/jquery.js"></script>
+		<script src="//code.jquery.com/ui/1.7.2/jquery-ui.js"></script>
 		<!--<script type="text/javascript" src="js/tween.min.js"></script>-->
 		<script type="text/javascript" src="js/Tween.js"></script>
 
@@ -78,6 +77,52 @@
 		<script type="text/javascript" src="js/config.js"></script>
 		<script type="text/javascript" src="js/cameraControl.js"></script>
 
+		<script>function initDialog()
+			{
+					// var innerDiv = $("`<div>`");
+					// $(innerDiv).attr({'id' : 'testDialog'});
+					// var textBox = $("`<textarea>`");
+					// $(textBox).attr({'id' : 'testBox', 'rows' : '2'});
+			
+					// $(innerDiv).append(textBox).appendTo('body');
+					// $('#testDialog').css('visibility', 'hidden');
+			
+					$('#testDialog').dialog({
+							autoOpen    : true,
+							width       : '50%',
+					// 		buttons     : 
+					// 		{
+					// 		"Alert" : function() {
+					// 				alert($('#testBox').val());
+					// 		} 
+					// }
+			
+			});
+			}   
+			
+			//Show the hidden dialog.
+			function showDialog()
+			{
+					$('#testDialog').css('visibility', 'visible');
+					$('#testDialog').dialog('open');
+			
+			}  
+			window.onload = function() {
+					initDialog();
+					// $('#mylink').click(function(){
+							// showDialog();
+					// });
+			
+			}</script>
+	</head>
+	<body>
+		<div id="testDialog">
+			<h4>Judgement Wall Janus - 2015</h4>
+			<h5>by Travis Bennett (<a href="https://www.travisbennett.com/" target="_blank">travisbennett.com</a>)</h5>
+			<p>Disclaimer: Designed to run locally, hooked to a Kinect v1, projected on a wall.</p>
+			<p>Provided as is, for posterity. Things may be slow to load and / or be buggy.</p>
+			<p><a href="https://www.travisbennett.com/all/judgement-wall-janus-debuts-at-cal-academy-night-live" target="_blank">More Info</a></p>
+		</div>
 		<script type="x-shader/x-vertex" id="vertexShader">
 
 			varying vec3 vWorldPosition;
@@ -137,10 +182,10 @@
 
 			var modelScale = 300;
 
-		    var gridWidth = 5;
+		    var gridWidth = 3;
 		    var gridHeight = 3;
 		    
-		    var maxPopulation = 15;// gridWidth*gridHeight;
+		    var maxPopulation = 9;// gridWidth*gridHeight;
 
 		    window.movePerson;
 

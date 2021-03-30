@@ -101,11 +101,11 @@ People.prototype.move = function(pos){
 };
 
 People.prototype.gridLayout = function() {
-	var sceneWidth = $("#container").width()*3.25;
-	var sceneHeight = $("#container").height()*3;
+	var sceneWidth = $("#container").width()*3;
+	var sceneHeight = $("#container").height()*2.5;
 
 	var xStart = -sceneWidth/2;
-	var yStart = sceneHeight/2-500;
+	var yStart = sceneHeight/2-300;
 
     var xInc = sceneWidth/(this.gridDimensions.width-1);
     var yInc = sceneHeight/(this.gridDimensions.height-1);

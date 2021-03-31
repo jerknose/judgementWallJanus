@@ -17,7 +17,7 @@ When someone walked in front of the Judgement Wall, our digital patrons would tu
 
 ------------
 
-[Demo](https://reckless.technology/archive/judgement-wall-janus/) • [Code](https://github.com/jerknose/judgementWallJanus) • [Event](https://codame.com/events/body-scan-asset-jam)
+[Demo](https://reckless.technology/archive/judgement-wall-janus/) • [More Info](https://www.travisbennett.com/all/judgement-wall-janus) • [Event](https://codame.com/events/body-scan-asset-jam)
 
 ------------
 
